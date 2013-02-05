@@ -26,6 +26,10 @@ public class RunnableRequest implements Runnable{
 		
 	}
 	
+	public KoneksiPushFactory getKoneksiPushFactory(){
+		return runnablePush.getKoneksiPushFactory();
+	}
+
 	
 	public void stopServer(){
 		jalan = false;

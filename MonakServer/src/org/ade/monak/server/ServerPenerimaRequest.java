@@ -31,17 +31,19 @@ public class ServerPenerimaRequest implements Runnable{
             in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
             String    []    kiriman = in.readLine().split("#");
             DataOutputStream dosRequest = new DataOutputStream(socket.getOutputStream());
+
+            Socket socket = koneksiPush.getOrtuKoneks().get(kiriman[0]);
             
-            if(koneksiPush.getOrtuKoneks().containsKey(kiriman[0])){
+            if(socket.isConnected()){
 				dosRequest.write(("sukses"+"\n").getBytes());
 				dosRequest.flush();
 				dosRequest.close();
             	in.close();
 	            this.socket.close();
-	            Socket socket = koneksiPush.getOrtuKoneks().get(kiriman[0]);
 	            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 	            dos.write((kiriman[1]+"\n").getBytes());
 	            System.out.print("ayolah");
+	            System.out.print(kiriman[1]);
 	            dos.flush();	
 			}else{
 

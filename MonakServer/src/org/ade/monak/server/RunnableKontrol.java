@@ -2,10 +2,12 @@ package org.ade.monak.server;
 
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Map;
 
 public class RunnableKontrol implements Runnable{
 
@@ -47,11 +49,21 @@ public class RunnableKontrol implements Runnable{
 				Socket socket = serverRequest.accept();
 				BufferedReader buff = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				String pesan = buff.readLine();
+				DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+				if(pesan.equals("mati")){
+					stopServer();
+				}else if(pesan.equals("daftar")){
+					Map<String, Socket> maps = runnableRequest.getKoneksiPushFactory().getOrtuKoneks();
+					for(String isiDaftar:maps.keySet()){
+						dos.write((isiDaftar+"\n").getBytes());
+						dos.flush();
+					}
+					dos.write("end\n".getBytes());
+					dos.flush();
+				}
+				dos.close();
 				buff.close();
 				socket.close();
-				if(pesan == "mati"){
-					stopServer();
-				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}	
