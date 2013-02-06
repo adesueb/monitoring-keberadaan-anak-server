@@ -1,4 +1,4 @@
-package org.ade.monak.server;
+package org.ade.monak.server.test;
 
 
 import java.io.BufferedReader;
@@ -16,15 +16,19 @@ public class MonakKontrol {
 				Socket socket = new Socket("localhost", PORT_KONTROL);
 				DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 				dos.write((args[0]+"\n").getBytes());
-				if(args[0].equals("daftar")){
-					BufferedReader buff = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				dos.flush();
+				BufferedReader buff = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				
+				if(args[0].equals(DAFTAR)){
 					String pesan = "";
-					while(! (pesan= buff.readLine()).equals("end")){
+					while(! (pesan= buff.readLine()).equals(END)){
 						System.out.println(pesan);
 					}
 					System.out.println(pesan);
+				}else if(args[0].equals(STOP)){
+					
 				}
-				dos.flush();
+				buff.close();
 				dos.close();
 				socket.close();
 			} catch (UnknownHostException e) {
@@ -38,4 +42,9 @@ public class MonakKontrol {
 	
 
 	private static final int PORT_KONTROL	= 5555;
+	private static final String DAFTAR 		= "daftar";
+	private static final String STOP		= "stop";
+
+	private static final String END			= "end";
+	
 }

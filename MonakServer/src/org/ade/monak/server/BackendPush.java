@@ -2,24 +2,22 @@ package org.ade.monak.server;
 
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
-public class RunnablePush implements Runnable{
+public class BackendPush implements Runnable{
 
-	public RunnablePush(){
+	public BackendPush(){
 		try {
 			this.serverPush 		= new ServerSocket(PORT_PUSH);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		this.serverKoneksiPush 	= new KoneksiPushFactory();
-	}
-	
-	public KoneksiPushFactory getKoneksiPushFactory(){
-		return this.serverKoneksiPush;
 	}
 	
 	public void startServer(){
@@ -38,13 +36,26 @@ public class RunnablePush implements Runnable{
 		threadPush.stop();
 	}
 	
+	
+	
+	public Map<String, Socket> getMapPush() {
+		return mapPush;
+	}
+
+	public void setMapPush(Map<String, Socket> mapPush) {
+		this.mapPush = mapPush;
+	}
+
 	public void run() {
 		while(jalan){
 			try {
 				Socket socket = serverPush.accept();
+				socket.setSoTimeout(10000);
 				BufferedReader buff = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//				DataOutputStream dos = new DataOutputStream(socket.getOutputStream()); belum dipakai
 				String idOrtu = buff.readLine();
-				serverKoneksiPush.getOrtuKoneks().put(idOrtu, socket);
+				mapPush.put(idOrtu, socket);
+//				new Thread(new BackendPingPong(buff, dos)).start(); belum
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -53,9 +64,12 @@ public class RunnablePush implements Runnable{
 
 	public Thread threadPush;
 	private ServerSocket serverPush;
-	private final KoneksiPushFactory serverKoneksiPush;
-	
 	private boolean jalan = false;
 	
 	private static final int PORT_PUSH	= 4444;
+	
+
+	private Map<String, Socket> mapPush = new HashMap<String, Socket>();
+	
+	
 }

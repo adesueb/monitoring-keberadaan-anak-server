@@ -1,12 +1,16 @@
 <project name="MonakServer" basedir="." default="main">
 
+	<property name="JDK1.6.dir" location="/usr/lib/jvm/java-6-openjdk" />
+	<property name="javac1.6" location="${JDK1.6.dir}/bin/javac" />
+
+	
     <target name="clean">
         <delete dir="build"/>
     </target>
 
     <target name="compile">
         <mkdir dir="build/classes"/>
-        <javac srcdir="src" destdir="build/classes"/>
+        <javac executable="${javac1.6}" source="1.6" target="1.6" includeantruntime="false" srcdir="src" destdir="build/classes"/>
     </target>
 
     <target name="jar" depends="compile">
@@ -17,11 +21,19 @@
             </manifest>
         </jar>
     </target>
+	
+	<target name="jar2">
+	        <jar destfile="/home/ade/MonakServer.jar" basedir="build/classes">
+	            <manifest>
+	                <attribute name="Main-Class" value="org.ade.monak.server.MonakServer"/>
+	            </manifest>
+	        </jar>
+	</target>
 
     <target name="run">
         <java jar="build/jar/MonakServer.jar" fork="true"/>
     </target>
     
-    <target name="main" depends="clean,jar"/>
+    <target name="main" depends="clean,jar,jar2"/>
 
 </project>

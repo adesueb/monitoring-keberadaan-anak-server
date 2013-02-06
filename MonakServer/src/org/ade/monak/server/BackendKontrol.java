@@ -9,11 +9,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
 
-public class RunnableKontrol implements Runnable{
+public class BackendKontrol implements Runnable{
 
-	public RunnableKontrol(){
+	public BackendKontrol(){
 
-		runnableRequest				= new RunnableRequest();
+		runnableRequest				= new BackendRequest();
 		
 		try {
 			this.serverRequest 		= new ServerSocket(PORT_KONTROL);
@@ -50,10 +50,10 @@ public class RunnableKontrol implements Runnable{
 				BufferedReader buff = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				String pesan = buff.readLine();
 				DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-				if(pesan.equals("mati")){
+				if(pesan.equals(STOP)){
 					stopServer();
-				}else if(pesan.equals("daftar")){
-					Map<String, Socket> maps = runnableRequest.getKoneksiPushFactory().getOrtuKoneks();
+				}else if(pesan.equals(DAFTAR)){
+					Map<String, Socket> maps = runnableRequest.getBackendPush().getMapPush();
 					for(String isiDaftar:maps.keySet()){
 						dos.write((isiDaftar+"\n").getBytes());
 						dos.flush();
@@ -72,8 +72,13 @@ public class RunnableKontrol implements Runnable{
 	}
 
 	private Thread			threadKontrol;
-	private RunnableRequest	runnableRequest;
+	private BackendRequest	runnableRequest;
 	private static final int PORT_KONTROL	= 5555;
 	private ServerSocket serverRequest;
 	private boolean jalan;
+	
+	private static final String STOP	= "stop";
+	private static final String DAFTAR	= "daftar";
+	private static final String PING	= "?";
+	private static final String PONG	= "Y";
 }	
