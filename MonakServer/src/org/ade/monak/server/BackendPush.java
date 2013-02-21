@@ -2,7 +2,6 @@ package org.ade.monak.server;
 
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
@@ -10,11 +9,14 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
+/*
+ * format daftar push : id_koneksi
+ */
 public class BackendPush implements Runnable{
 
-	public BackendPush(){
+	public BackendPush(int port){
 		try {
-			this.serverPush 		= new ServerSocket(PORT_PUSH);
+			this.serverPush 		= new ServerSocket(port);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -66,7 +68,6 @@ public class BackendPush implements Runnable{
 	private ServerSocket serverPush;
 	private boolean jalan = false;
 	
-	private static final int PORT_PUSH	= 4444;
 	
 
 	private Map<String, Socket> mapPush = new HashMap<String, Socket>();

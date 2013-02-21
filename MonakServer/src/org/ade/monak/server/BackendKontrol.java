@@ -13,7 +13,8 @@ public class BackendKontrol implements Runnable{
 
 	public BackendKontrol(){
 
-		runnableRequest				= new BackendRequest();
+		backendPush				= new BackendPush(PORT_PUSH);
+		backendRequest			= new BackendRequest(backendPush, PORT_REQUEST);
 		
 		try {
 			this.serverRequest 		= new ServerSocket(PORT_KONTROL);
@@ -27,7 +28,7 @@ public class BackendKontrol implements Runnable{
 		jalan = true;
 		threadKontrol = new Thread(this);
 		threadKontrol.start();
-		runnableRequest.startServer();
+		backendRequest.startServer();
 		
 	}
 	
@@ -40,7 +41,7 @@ public class BackendKontrol implements Runnable{
 			e.printStackTrace();
 		}
 		threadKontrol.stop();
-		runnableRequest.stopServer();
+		backendRequest.stopServer();
 	}
 	
 	public void run() {
@@ -53,7 +54,7 @@ public class BackendKontrol implements Runnable{
 				if(pesan.equals(STOP)){
 					stopServer();
 				}else if(pesan.equals(DAFTAR)){
-					Map<String, Socket> maps = runnableRequest.getBackendPush().getMapPush();
+					Map<String, Socket> maps = backendPush.getMapPush();
 					for(String isiDaftar:maps.keySet()){
 						dos.write((isiDaftar+"\n").getBytes());
 						dos.flush();
@@ -72,13 +73,16 @@ public class BackendKontrol implements Runnable{
 	}
 
 	private Thread			threadKontrol;
-	private BackendRequest	runnableRequest;
+	private BackendRequest	backendRequest;
+	private BackendPush		backendPush;
+	
 	private static final int PORT_KONTROL	= 5555;
+	private static final int PORT_PUSH		= 4444;
+	private static final int PORT_REQUEST	= 2525;
+	
 	private ServerSocket serverRequest;
 	private boolean jalan;
 	
 	private static final String STOP	= "stop";
 	private static final String DAFTAR	= "daftar";
-	private static final String PING	= "?";
-	private static final String PONG	= "Y";
 }	

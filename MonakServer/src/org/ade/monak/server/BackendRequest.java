@@ -11,14 +11,18 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+/*
+ * request format : id_koneksi#request
+ */
 public class BackendRequest implements Runnable{
 
-	public BackendRequest(){
+	public BackendRequest(BackendPush backendPush, int port){
 
-		backendPush	= new BackendPush();
-		
+		this.backendPush	= backendPush;
+
 		try {
-			this.serverRequest 	= new ServerSocket(PORT_REQUEST);
+			this.serverRequest 	= new ServerSocket(port);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -29,7 +33,7 @@ public class BackendRequest implements Runnable{
 		jalan = true;
 		threadRequest = new Thread(this);
 		threadRequest.start();
-		backendPush.startServer();
+		backendPush.startServer();	
 		
 	}
 	
@@ -67,7 +71,6 @@ public class BackendRequest implements Runnable{
 
 	private Thread				threadRequest;
 	private BackendPush			backendPush;
-	private static final int 	PORT_REQUEST	= 2525;
 	private ServerSocket	 	serverRequest;
 	private boolean jalan;
 	
