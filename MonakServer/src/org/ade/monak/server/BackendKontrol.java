@@ -77,7 +77,7 @@ public class BackendKontrol implements Runnable{
 	private BackendPush		backendPush;
 	
 	private static final int PORT_KONTROL	= 5555;
-	private static final int PORT_PUSH		= 4444;
+	private static final int PORT_PUSH		= 4442;
 	private static final int PORT_REQUEST	= 2525;
 	
 	private ServerSocket serverRequest;
