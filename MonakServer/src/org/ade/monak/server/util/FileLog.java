@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class FileLog {
 	public static void writeLog(String log){
-		File file = new File("/MonakServerLog.txt");
+		File file = new File("MonakServerLog.txt");
 	    FileOutputStream fos;
 		try {
 			fos = new FileOutputStream(file, true);
@@ -23,7 +23,7 @@ public class FileLog {
 	
 	public static String readLog(){
 		String log = "";
-		File file = new File("/MonakServerLog.txt");
+		File file = new File("MonakServerLog.txt");
 	    FileInputStream fis;
 		try {
 			fis = new FileInputStream(file);
@@ -41,7 +41,7 @@ public class FileLog {
 	}
 	
 	public static void clearLog(){
-		File file = new File("/MonakServerLog.txt");
+		File file = new File("MonakServerLog.txt");
 		file.delete();
 	}
 	
