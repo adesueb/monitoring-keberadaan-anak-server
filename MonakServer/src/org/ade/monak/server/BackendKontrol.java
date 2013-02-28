@@ -9,6 +9,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
 
+import org.ade.monak.server.util.FileLog;
+
 public class BackendKontrol implements Runnable{
 
 	public BackendKontrol(){
@@ -61,6 +63,17 @@ public class BackendKontrol implements Runnable{
 					}
 					dos.write("end\n".getBytes());
 					dos.flush();
+				}else if(pesan.equals(LOG)){
+					String log = FileLog.readLog();
+					char[] charArray = log.toCharArray();
+					for(int i=0;i<charArray.length;i++){
+						dos.writeChar(charArray[i]);
+					}
+				}else if(pesan.equals(CLEAR_LOG)){
+					FileLog.clearLog();
+
+					dos.write("sukses delete\n".getBytes());
+					dos.flush();
 				}
 				dos.close();
 				buff.close();
@@ -83,6 +96,8 @@ public class BackendKontrol implements Runnable{
 	private ServerSocket serverRequest;
 	private boolean jalan;
 	
-	private static final String STOP	= "stop";
-	private static final String DAFTAR	= "daftar";
+	private static final String STOP		= "stop";
+	private static final String DAFTAR		= "daftar";
+	private static final String LOG			= "log";
+	private static final String CLEAR_LOG	= "clear_log";
 }	

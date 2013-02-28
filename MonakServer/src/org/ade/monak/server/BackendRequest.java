@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.ade.monak.server.util.FileLog;
+
 
 /*
  * request format : id_koneksi#request
@@ -117,40 +119,51 @@ public class BackendRequest implements Runnable{
 			             socketPush = null;
 			             mapPush.remove(idKoneksi);
 			        }
-			        dosRequest.close();
-	            	buffRequest.close();
-		            this.socketRequest.close();
 		            System.out.print(kiriman[1]+pesan);
 		            
 				}else{
-					
+			       	FileLog.writeLog("mencoba kirim ke :"+idKoneksi+" gagal karena belum didaftar");
 		            dosRequest.write(("gagal"+"\n").getBytes());
 		            dosRequest.flush();
-		            dosRequest.close();
-		            buffRequest.close();
-		            socketRequest.close();
-		            socketPush = null;
-		            mapPush.remove(idKoneksi);
+		
+		           
 				}
 	            
 	        } catch(SocketTimeoutException e){	
 	        	try {
 					dosRequest.write(("gagal"+"\n").getBytes());
 		        	dosRequest.flush();
+		        	FileLog.writeLog("mencoba kirim ke :"+idKoneksi+" gagal karena socket time out");
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
 	        	mapPush.remove(idKoneksi);
 			}catch (IOException ex) {
+				try {
+					dosRequest.write(("gagal"+"\n").getBytes());
+		        	dosRequest.flush();
+		        	mapPush.remove(idKoneksi);
+		        	FileLog.writeLog("mencoba kirim ke :"+idKoneksi+" gagal karena io exception");
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 	            Logger.getLogger(ServerPenerimaRequest.class.getName()).log(Level.SEVERE, null, ex);
 	        } finally {
-	           
+	        	 try {
+	        		 if(buffRequest!=null){
+	        			 buffRequest.close();
+	        		 }
+					dosRequest.close();
+			        socketRequest.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 	        }
 	    }
 	    
 	    private final Socket             	socketRequest;
 	    private final Map<String, Socket>	mapPush;
-	    private String 						idKoneksi;
+	    private String 						idKoneksi="";
 	    private DataOutputStream 			dosRequest;
 	}
 }	
