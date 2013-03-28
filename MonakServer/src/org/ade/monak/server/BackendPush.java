@@ -30,12 +30,20 @@ public class BackendPush implements Runnable{
 	
 	public void stopServer(){
 		jalan = false;
+		for(Socket soc:mapPush.values()){
+			if(soc!=null&&soc.isConnected()){
+				try {
+					soc.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		try {
 			serverPush.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		threadPush.stop();
 	}
 	
 	
@@ -54,10 +62,8 @@ public class BackendPush implements Runnable{
 				Socket socket = serverPush.accept();
 				socket.setSoTimeout(10000);
 				BufferedReader buff = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//				DataOutputStream dos = new DataOutputStream(socket.getOutputStream()); belum dipakai
 				String idOrtu = buff.readLine();
 				mapPush.put(idOrtu, socket);
-//				new Thread(new BackendPingPong(buff, dos)).start(); belum
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

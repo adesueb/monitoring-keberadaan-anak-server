@@ -51,7 +51,6 @@ public class BackendRequest implements Runnable{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		threadRequest.stop();
 		backendPush.stopServer();
 	}
 	
