@@ -9,6 +9,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
 
+import org.ade.monak.server.push_control.PushClientResponseCatcher;
+import org.ade.monak.server.push_control.PushPingSender;
 import org.ade.monak.server.util.FileLog;
 
 public class BackendKontrol implements Runnable{
@@ -89,15 +91,18 @@ public class BackendKontrol implements Runnable{
 	private BackendRequest	backendRequest;
 	private BackendPush		backendPush;
 	
+	private PushClientResponseCatcher 	pushClientResponseCatcher;
+	private PushPingSender				pushPingSender;
+	
 	private static final int PORT_KONTROL	= 5555;
-	private static final int PORT_PUSH		= 4442;
+	private static final int PORT_PUSH	= 4442;
 	private static final int PORT_REQUEST	= 2525;
 	
 	private ServerSocket serverRequest;
 	private boolean jalan;
 	
 	private static final String STOP		= "stop";
-	private static final String DAFTAR		= "daftar";
-	private static final String LOG			= "log";
+	private static final String DAFTAR	= "daftar";
+	private static final String LOG		= "log";
 	private static final String CLEAR_LOG	= "clear_log";
 }	

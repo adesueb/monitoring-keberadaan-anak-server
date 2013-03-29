@@ -3,9 +3,9 @@ package org.ade.monak.server.push_control;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class PushPing implements Runnable{
+public class PushPingSender implements Runnable{
 
-	public PushPing (DataOutputStream dos){
+	public PushPingSender (DataOutputStream dos){
 		this.dos	= dos;
 	}
 	
