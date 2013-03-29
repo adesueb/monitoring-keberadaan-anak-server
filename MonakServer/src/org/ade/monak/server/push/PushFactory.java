@@ -1,4 +1,4 @@
-package org.ade.monak.server;
+package org.ade.monak.server.push;
 
 
 import java.io.BufferedReader;
@@ -12,9 +12,9 @@ import java.util.Map;
 /*
  * format daftar push : id_koneksi
  */
-public class BackendPush implements Runnable{
+public class PushFactory implements Runnable{
 
-	public BackendPush(int port){
+	public PushFactory(int port){
 		try {
 			this.serverPush 		= new ServerSocket(port);
 		} catch (IOException e) {
@@ -30,7 +30,8 @@ public class BackendPush implements Runnable{
 	
 	public void stopServer(){
 		jalan = false;
-		for(Socket soc:mapPush.values()){
+		for(Push push:mapPush.values()){
+			Socket soc = push.getSocket();
 			if(soc!=null&&soc.isConnected()){
 				try {
 					soc.close();
@@ -48,11 +49,11 @@ public class BackendPush implements Runnable{
 	
 	
 	
-	public Map<String, Socket> getMapPush() {
+	public Map<String, Push> getMapPush() {
 		return mapPush;
 	}
 
-	public void setMapPush(Map<String, Socket> mapPush) {
+	public void setMapPush(Map<String, Push> mapPush) {
 		this.mapPush = mapPush;
 	}
 
@@ -63,7 +64,7 @@ public class BackendPush implements Runnable{
 				socket.setSoTimeout(10000);
 				BufferedReader buff = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				String idOrtu = buff.readLine();
-				mapPush.put(idOrtu, socket);
+				mapPush.put(idOrtu, new Push(socket));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -76,7 +77,7 @@ public class BackendPush implements Runnable{
 	
 	
 
-	private Map<String, Socket> mapPush = new HashMap<String, Socket>();
+	private Map<String, Push> mapPush = new HashMap<String, Push>();
 	
 	
 }

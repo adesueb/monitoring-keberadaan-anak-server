@@ -1,6 +1,5 @@
 package org.ade.monak.server;
 
-
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -9,16 +8,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
 
-import org.ade.monak.server.push_control.PushClientResponseCatcher;
-import org.ade.monak.server.push_control.PushPingSender;
+import org.ade.monak.server.push.Push;
+import org.ade.monak.server.push.PushService;
 import org.ade.monak.server.util.FileLog;
 
-public class BackendKontrol implements Runnable{
+public class ServerKontrol implements Runnable{
 
-	public BackendKontrol(){
-
-		backendPush				= new BackendPush(PORT_PUSH);
-		backendRequest			= new BackendRequest(backendPush, PORT_REQUEST);
+	public ServerKontrol(){
 		
 		try {
 			this.serverRequest 		= new ServerSocket(PORT_KONTROL);
@@ -32,8 +28,6 @@ public class BackendKontrol implements Runnable{
 		jalan = true;
 		threadKontrol = new Thread(this);
 		threadKontrol.start();
-		backendRequest.startServer();
-		
 	}
 	
 	
@@ -44,8 +38,6 @@ public class BackendKontrol implements Runnable{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		threadKontrol.stop();
-		backendRequest.stopServer();
 	}
 	
 	public void run() {
@@ -58,7 +50,7 @@ public class BackendKontrol implements Runnable{
 				if(pesan.equals(STOP)){
 					stopServer();
 				}else if(pesan.equals(DAFTAR)){
-					Map<String, Socket> maps = backendPush.getMapPush();
+					Map<String, Push> maps = pushService.getPushFactory().getMapPush();
 					for(String isiDaftar:maps.keySet()){
 						dos.write((isiDaftar+"\n").getBytes());
 						dos.flush();
@@ -88,15 +80,10 @@ public class BackendKontrol implements Runnable{
 	}
 
 	private Thread			threadKontrol;
-	private BackendRequest	backendRequest;
-	private BackendPush		backendPush;
 	
-	private PushClientResponseCatcher 	pushClientResponseCatcher;
-	private PushPingSender				pushPingSender;
+	private PushService 	pushService;
 	
 	private static final int PORT_KONTROL	= 5555;
-	private static final int PORT_PUSH	= 4442;
-	private static final int PORT_REQUEST	= 2525;
 	
 	private ServerSocket serverRequest;
 	private boolean jalan;

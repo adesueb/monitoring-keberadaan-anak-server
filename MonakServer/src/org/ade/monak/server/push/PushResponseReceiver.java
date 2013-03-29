@@ -1,4 +1,4 @@
-package org.ade.monak.server.push_control;
+package org.ade.monak.server.push;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,9 +10,9 @@ import org.ade.monak.server.util.Handler;
 /*
  * catch all response from client in channel push....
  */
-public class PushClientResponseCatcher implements Runnable{
+public class PushResponseReceiver implements Runnable{
 
-	public PushClientResponseCatcher(BufferedReader buff){
+	public PushResponseReceiver(BufferedReader buff){
 		this.buff = buff;
 	}
 	
@@ -22,7 +22,7 @@ public class PushClientResponseCatcher implements Runnable{
 		mapHandler = null;
 	}
 		
-	// when add handler if the thread did'nt start, so start the thread...
+	// when add handler if the thread doesn't start, so start the thread...
 	public void addHandler(String key, Handler handler){
 		
 		if(mapHandler!=null){
@@ -102,7 +102,6 @@ public class PushClientResponseCatcher implements Runnable{
 	private boolean isStart = false;
 	private Map<String,Handler> mapHandler;
 	private final BufferedReader buff;
-	private final static String PONG = "Y";
 	public final static String FAIL = "fail";
 
 }

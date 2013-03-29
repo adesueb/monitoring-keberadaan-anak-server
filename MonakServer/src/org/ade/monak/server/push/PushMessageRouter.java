@@ -1,4 +1,4 @@
-package org.ade.monak.server;
+package org.ade.monak.server.push;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -17,11 +17,11 @@ import org.ade.monak.server.util.FileLog;
 /*
  * request format : id_koneksi#request
  */
-public class BackendRequest implements Runnable{
+public class PushMessageRouter implements Runnable{
 
-	public BackendRequest(BackendPush backendPush, int port){
+	public PushMessageRouter(PushService pushService, int port){
 
-		this.backendPush	= backendPush;
+		this.pushService	= pushService;
 
 		try {
 			this.serverRequest 	= new ServerSocket(port);
@@ -34,15 +34,9 @@ public class BackendRequest implements Runnable{
 	public void startServer(){
 		jalan = true;
 		threadRequest = new Thread(this);
-		threadRequest.start();
-		backendPush.startServer();	
+		threadRequest.start();	
 		
 	}
-	
-	public BackendPush getBackendPush(){
-		return backendPush;
-	}
-
 	
 	public void stopServer(){
 		jalan = false;
@@ -51,7 +45,6 @@ public class BackendRequest implements Runnable{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		backendPush.stopServer();
 	}
 	
 	public void run() {
@@ -59,8 +52,8 @@ public class BackendRequest implements Runnable{
 			try {
 				Socket socket = serverRequest.accept();
 
-				new Thread(new ServerPenerimaRequest
-						(socket, backendPush.getMapPush()))
+				new Thread(new PushMessageReceiver
+						(socket, pushService.getPushFactory().getMapPush()))
 							.start();
 				
 			} catch (IOException e) {
@@ -70,16 +63,16 @@ public class BackendRequest implements Runnable{
 		
 	}
 
-	private Thread				threadRequest;
-	private BackendPush			backendPush;
-	private ServerSocket	 	serverRequest;
+	private Thread			threadRequest;
+	private PushService		pushService;
+	private ServerSocket	serverRequest;
 	private boolean jalan;
 	
 	private final static String SUKSES = "Y";
 	
-	private static class ServerPenerimaRequest implements Runnable{
+	private static class PushMessageReceiver implements Runnable{
 
-	    public ServerPenerimaRequest(Socket socket, Map<String, Socket> mapPush){
+	    public PushMessageReceiver(Socket socket, Map<String, Push> mapPush){
 	    	this.socketRequest		= socket;
 	    	this.mapPush	= mapPush;
 	    	try {
@@ -96,9 +89,12 @@ public class BackendRequest implements Runnable{
 	        try {
 	            
 	            buffRequest 			= new BufferedReader(new InputStreamReader(this.socketRequest.getInputStream()));
+	            
 	            String    []    kiriman = buffRequest.readLine().split("#");
 	            idKoneksi 				= kiriman[0];
-	            Socket socketPush 		= mapPush.get(idKoneksi);
+	           
+	            Push push		 		= mapPush.get(idKoneksi);
+	            Socket 		socketPush	= push.getSocket();
 	            
 	            if(socketPush!=null && socketPush.isConnected()){
 					DataOutputStream dosPush = new DataOutputStream(socketPush.getOutputStream());
@@ -146,7 +142,7 @@ public class BackendRequest implements Runnable{
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
-	            Logger.getLogger(ServerPenerimaRequest.class.getName()).log(Level.SEVERE, null, ex);
+	            Logger.getLogger(PushMessageReceiver.class.getName()).log(Level.SEVERE, null, ex);
 	        } finally {
 	        	 try {
 	        		 if(buffRequest!=null){
@@ -161,7 +157,7 @@ public class BackendRequest implements Runnable{
 	    }
 	    
 	    private final Socket             	socketRequest;
-	    private final Map<String, Socket>	mapPush;
+	    private final Map<String, Push>	mapPush;
 	    private String 						idKoneksi="";
 	    private DataOutputStream 			dosRequest;
 	}

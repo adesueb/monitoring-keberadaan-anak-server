@@ -1,12 +1,17 @@
-package org.ade.monak.server.push_control;
+package org.ade.monak.server.push;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class PushPingSender implements Runnable{
 
-	public PushPingSender (DataOutputStream dos){
-		this.dos	= dos;
+	public PushPingSender (Push push){
+		this.push = push;
+		try {
+			this.dos	= new DataOutputStream(push.getSocket().getOutputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void start(){
@@ -38,11 +43,13 @@ public class PushPingSender implements Runnable{
 		
 	}
 	
-	private final DataOutputStream 	dos;
+	private DataOutputStream 	dos;
 	
 	private final static String PING = "?";
 	
-	private boolean start = false;
+	private boolean 		start = false;
+	
+	private final Push 	push;
 	
 	
 }
